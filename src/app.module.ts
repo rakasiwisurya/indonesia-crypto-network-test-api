@@ -6,6 +6,7 @@ import { SupabaseModule } from "./common/supabase/supabase.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { TasksModule } from "./modules/tasks/tasks.module";
 import { MailModule } from './common/mail/mail.module';
+import { AiSuggestionModule } from './modules/ai-suggestion/ai-suggestion.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { MailModule } from './common/mail/mail.module';
     AuthModule,
     TasksModule,
     MailModule,
+    AiSuggestionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
