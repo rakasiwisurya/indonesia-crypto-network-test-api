@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { SupabaseService } from "src/services/supabase.service";
+import { SupabaseService } from "src/common/supabase/supabase.service";
 import { TResponse } from "src/types/response.type";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
