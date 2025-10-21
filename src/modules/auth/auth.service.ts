@@ -10,7 +10,7 @@ export class AuthService {
   constructor(private supabase: SupabaseService) {}
 
   async register(payload: RegisterDto): Promise<TResponse<null>> {
-    const { error } = await this.supabase.client.auth.signUp({
+    const { error } = await this.supabase.authClient.auth.signUp({
       email: payload.email,
       password: payload.password,
       options: { data: { display_name: payload.name } },
@@ -25,7 +25,7 @@ export class AuthService {
   }
 
   async login(payload: LoginDto): Promise<TResponse<Login>> {
-    const { data, error } = await this.supabase.client.auth.signInWithPassword({
+    const { data, error } = await this.supabase.authClient.auth.signInWithPassword({
       email: payload.email,
       password: payload.password,
     });
@@ -43,7 +43,7 @@ export class AuthService {
   }
 
   async getUsers(): Promise<TResponse<string[]>> {
-    const { data, error } = await this.supabase.client.auth.admin.listUsers();
+    const { data, error } = await this.supabase.authClient.auth.admin.listUsers();
 
     if (error) throw new BadRequestException(error.message);
 

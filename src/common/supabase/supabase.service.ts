@@ -3,21 +3,23 @@ import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 @Injectable()
 export class SupabaseService {
-  private readonly supabase: SupabaseClient;
+  private readonly serviceClient: SupabaseClient;
+  private readonly publicClient: SupabaseClient;
 
   constructor() {
-    const url = process.env.SUPABASE_URL;
-    const anonKey = process.env.SUPABASE_ANON_KEY; //unused for conditional role key
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const url = process.env.SUPABASE_URL!;
+    const anonKey = process.env.SUPABASE_ANON_KEY!;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-    if (!url || !anonKey || !serviceRoleKey) {
-      throw new Error("Missing Supabase configuration values");
-    }
-
-    this.supabase = createClient(url, serviceRoleKey);
+    this.serviceClient = createClient(url, serviceKey);
+    this.publicClient = createClient(url, anonKey);
   }
 
   get client(): SupabaseClient {
-    return this.supabase;
+    return this.serviceClient;
+  }
+
+  get authClient(): SupabaseClient {
+    return this.publicClient;
   }
 }
