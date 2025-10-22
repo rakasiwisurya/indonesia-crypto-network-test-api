@@ -12,7 +12,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
 
   app.enableCors({
-    origin: process.env.CLIENT_URL,
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -32,12 +32,10 @@ async function bootstrap() {
 
   app.useGlobalFilters(new AllExceptionsFilter());
 
-  if (process.env.NODE_ENV !== "production") {
-    await app.listen(process.env.PORT ?? 4000);
-  } else {
-    await app.init();
-  }
+  await app.init();
+
+  return server;
 }
 bootstrap();
 
-export default server;
+export default await bootstrap();
