@@ -36,6 +36,5 @@ async function bootstrap() {
 
   return server;
 }
-bootstrap();
 
 export default await bootstrap();
