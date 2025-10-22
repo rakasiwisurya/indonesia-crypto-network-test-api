@@ -53,8 +53,6 @@ export class MailService {
 
   async sendMail({ to, subject, html }: { to: string; subject: string; html: string }) {
     try {
-      console.log("process.env.RESEND_DOMAIN", process.env.RESEND_DOMAIN);
-
       const result = await this.resend.emails.send({
         from: `Indonesia Crypto Network Test <${process.env.RESEND_DOMAIN}>`,
         to,
