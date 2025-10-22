@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import dayjs from "dayjs";
-import { addNewTaskMail } from "src/common/constants/mail/add-new-task.mail";
+import { addNewTaskMail, summaryTaskMail } from "src/common/constants/mail/task.mail";
 import { MailService } from "src/common/mail/mail.service";
 import { SupabaseService } from "src/common/supabase/supabase.service";
 import { TRequest } from "src/types/request.type";
@@ -103,6 +103,63 @@ export class TasksService {
 
     return {
       message: "Success delete data",
+      data: null,
+    };
+  }
+
+  async findSummaries(): Promise<TResponse<null>> {
+    const {
+      data: { users },
+      error,
+    } = await this.supabase.client.auth.admin.listUsers();
+
+    if (error) throw new BadRequestException(error.message);
+
+    for (const user of users) {
+      const { data, error } = await this.supabase.client
+        .from("tasks")
+        .select("task_name, due_date, status, created_at")
+        .order("created_at", { ascending: false })
+        .eq("user_id", user.id);
+
+      if (error) throw new BadRequestException(error.message);
+
+      const summaries = data.map(item => {
+        const dueDate = dayjs(item.due_date);
+        const today = dayjs();
+
+        let summary = "";
+
+        if (dueDate.isBefore(today, "day")) {
+          summary = "Overdue";
+        } else if (dueDate.isSame(today, "day")) {
+          summary = "Due Today";
+        } else if (dayjs(item.created_at).isSame(today, "day")) {
+          summary = "New Task";
+        } else {
+          summary = "Upcoming";
+        }
+
+        return {
+          task_name: item.task_name,
+          due_date: dayjs(item.due_date).format("DD MMM YYYY"),
+          status: item.status,
+          summary,
+        };
+      });
+
+      await this.mail.sendMail({
+        to: user.email!,
+        subject: "ICN Test Summary Task",
+        html: summaryTaskMail({
+          user_name: user.user_metadata.display_name,
+          summaries,
+        }),
+      });
+    }
+
+    return {
+      message: "Success get all summary data",
       data: null,
     };
   }

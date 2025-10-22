@@ -21,6 +21,11 @@ export class TasksController {
     return this.tasksService.findAll(req.user);
   }
 
+  @Get("summaries")
+  findSummaries() {
+    return this.tasksService.findSummaries();
+  }
+
   @UseGuards(AuthGuard)
   @Get(":id")
   findOne(@Param("id") id: string, @Req() req: TRequest) {
