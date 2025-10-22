@@ -37,4 +37,9 @@ async function bootstrap() {
   return server;
 }
 
-export default await bootstrap();
+let handler;
+(async () => {
+  handler = await bootstrap();
+})();
+
+export default (req, res) => handler(req, res);
