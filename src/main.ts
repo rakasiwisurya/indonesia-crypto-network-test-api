@@ -1,15 +1,11 @@
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import { ExpressAdapter } from "@nestjs/platform-express";
-import express from "express";
 import { AppModule } from "./app.module";
 import { AllExceptionsFilter } from "./filters/all-exceptions.filter";
 import { ResponseInterceptor } from "./interceptors/response.interceptor";
 
-const server = express();
-
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
+  const app = await NestFactory.create(AppModule);
 
   app.enableCors({
     origin: "*",
@@ -32,14 +28,6 @@ async function bootstrap() {
 
   app.useGlobalFilters(new AllExceptionsFilter());
 
-  await app.init();
-
-  return server;
+  await app.listen(process.env.PORT ?? 4000);
 }
-
-let handler;
-(async () => {
-  handler = await bootstrap();
-})();
-
-export default (req, res) => handler(req, res);
+bootstrap();
